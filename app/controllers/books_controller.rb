@@ -8,8 +8,16 @@ class BooksController < ApplicationController
     def index
         if params[:user_id]
           @books = @current_user.books
+            respond_to do |format|
+                format.html { render :index }
+                format.json { render json: @books}
+            end
         else
           @books = Book.all
+            respond_to do |format|
+                format.html { render :index }
+                format.json { render json: @books}
+            end
         end
     end
 
@@ -34,6 +42,10 @@ class BooksController < ApplicationController
           redirect_to books_path
         end
         @review = @book.reviews.build(user_id: @current_user.id)
+        respond_to do |format|
+            format.html { render :show }
+            format.json { render json: @book}
+        end
     end
 
     def edit

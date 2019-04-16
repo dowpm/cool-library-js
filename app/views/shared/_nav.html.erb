@@ -19,9 +19,9 @@
                 </li>
 
                 <li class="nav-item">
-                    <%= link_to_if(@current_user.author,
+                    <%= link_to_if(current_user.author,
                                     "Add New Book",
-                                    new_user_book_path(@current_user.full_name),
+                                    new_user_book_path(current_user.full_name),
                                     class: "nav-link") do %>
                     <% end %>
                 </li>

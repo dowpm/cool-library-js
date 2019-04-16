@@ -32,6 +32,8 @@ gem 'omniauth'
 gem 'omniauth-facebook'
 gem 'dotenv-rails'
 
+gem 'active_model_serializers', '0.10.6'
+
 # use bootstrap
 gem 'bootstrap', '~> 4.3.1'
 gem 'jquery-rails'

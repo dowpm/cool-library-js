@@ -1,12 +1,18 @@
 class ReviewsController < ApplicationController
     before_action :find_review, only: [:show, :edit, :update, :destroy]
+    
+    def index
+        render json: Review.all
+    end
 
     def show
         if !@review
             flash[:notice] = "Review does not exist."
-            render plain: flash[:notice]
-          #   redirect_to books_path
+            # render plain: flash[:notice]
+            redirect_to books_path
+            return
         end
+        render json: @review
     end
 
     def create
