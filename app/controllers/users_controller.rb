@@ -3,9 +3,9 @@ class UsersController < ApplicationController
 
   def index
     @users = User.all 
-    render json: @users 
+    render json: @users, status: 200
   end
-  
+
   def new
     redirect_to user_path(current_user) if current_user
     @user = User.new
@@ -24,7 +24,10 @@ class UsersController < ApplicationController
   end
 
   def show
-
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: @current_user, status: 200}
+    end
   end
 
   private

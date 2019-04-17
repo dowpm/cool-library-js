@@ -1,34 +1,51 @@
 <% title 'Profile' %>
 
-<h1 class="text-center">Welcome: <%= @current_user.full_name %></h1>
 
-<ul class="list-group"> 
-    <% if @current_user.author%>
-        <h3>Your books:</h3>
-        <% @current_user.books.each do |book| %>
-            <h4><%=
-                    link_to book.title+' - '+show_stars(book.average_rating),
-                    user_book_path(@current_user.full_name, book.id), 
-                    class: " list-group-item list-group-item-action" 
-                %>
-            </h4>
-        <% end %>
-        <p class="text-center pt-1"> 
-            <%=
-                link_to "Add a new book",
-                new_user_book_path(@current_user.full_name),
-                class: "btn btn-primary" 
-            %> 
-        </p>
-    <% else%>
-        <h3>Your reviews:</h3>
-        <% @current_user.reviews.each do |review| %>
-            <h4><%= 
-                    link_to review.book.title+' - '+show_stars(review.stars),
-                    review_path(review),
-                    class: " list-group-item list-group-item-action" 
-                %>
-            </h4>
-        <% end %>
-    <% end %>
-</ul>
+<script>
+    $.get('/users/<%= @current_user.full_name %>.json',function(data){
+        // console.log(data)
+        let userProfile = `<h1 class="text-center">Welcome: ${data.full_name}</h1> 
+                            <ul class="list-group">`
+
+        if(data.author){
+            
+            userProfile += `<h3>Your books:</h3>`
+
+            data.books.forEach(function(book){
+                userProfile += `<h4>
+                                    <a href="<%= @current_user.full_name %>/books/${book.id}" class="list-group-item list-group-item-action">
+                                    ${book.title} - ${showStars(book.average_rating)}
+                                    </a>
+                                </h4>`
+            })
+            userProfile += `<p class="text-center pt-1">
+                                <a href="<%= @current_user.full_name %>/books/new" class="btn btn-primary">
+                                    Add a new book
+                                </a> 
+                            </p>
+                            `
+
+            userProfile += `<h3>Your Reviews:</h3>`
+            data.reviews.forEach(function(review){
+                userProfile += `<h4>
+                                    <a href="../reviews/${review.id}" class="list-group-item list-group-item-action">
+                                    ${review.book.title} - ${showStars(review.stars)}
+                                    </a>
+                                </h4>`
+            })
+            userProfile += '</ul>'                        
+        }else{
+            userProfile += `<h3>Your reviews:</h3>`
+
+            data.reviews.forEach(function(review){
+                userProfile += `<h4>
+                                    <a href="../reviews/${review.id}" class="list-group-item list-group-item-action">
+                                    ${review.book.title} - ${showStars(review.stars)}
+                                    </a>
+                                </h4>`
+            })
+            userProfile += `</ul>`
+        }
+        $('.container').html(userProfile)
+    })
+</script>

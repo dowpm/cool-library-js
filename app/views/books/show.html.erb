@@ -1,7 +1,13 @@
 <% title 'Book' %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <%= link_to "Books", books_path, class: "breadcrumb-item" %>
+    <li class="breadcrumb-item active" aria-current="page"><%= @book.title%></li>
+  </ol>
+</nav>
 
 <div class="text-center w-md-50">
-<%= link_to "Back to books", books_path %>
+<%# link_to "Back to books", books_path %>
 
 <h3><%= @book.title %><br></h3>
 <h4>Summary: <%= @book.summary %><br></h4>
@@ -11,49 +17,53 @@
 <h4>Author: <%= @book.author_name %><br></h4>
 <p><b>Average Rating:</b> <%= show_stars(@book.average_rating) %>  </p>
 
-  <h5><p>Reviews:</h5>
+  <h5><p><b>Reviews:</b></p></h5>
   <div class="row justify-content-center">
-  <ul class="list-group col-sm-8"> 
-  <% @book.reviews.each do |review| %></p>
-    <% if review.id%>
-    
-      <%= link_to(review_path(review), class: " list-group-item list-group-item-action ") do %>
-        <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1"><%= review.user.full_name%></h5>
-          <small><%= show_stars(review.stars)%></small>
-        </div>
-     <p class="mb-1"><%= review.comments%></p>
-    <%# <small>Donec id elit non mi porta.</small> %>
+    <ul class="list-group col-sm-8"> 
+      <% @book.reviews.each do |review| %>
+        <% if review.id%>
+        
+          <%= link_to(review_path(review), class: " list-group-item list-group-item-action ") do %>
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1"><%= review.user.full_name%></h5>
+              <small><%= review.add_at %></small>
+            </div>
+        <p class="mb-1"><%= review.comments%></p>
+        <small><%= show_stars(review.stars)%></small>
+        <%# <small>Donec id elit non mi porta.</small> %>
+          <% end %>
+        
+        <%end%>
       <% end %>
-    
-    <%end%>
-  <% end %>
-  </ul>
-  </div>
-<p class="mb-1"><b>Add review:</b></p>
-<%= form_for @review, html: {class: 'pt-2 form-horizontal'} do |f| %>
-
-  <div class="form-group row justify-content-center">
-    <%= f.label :stars, class: "col-md-2 control-label" %>
-    <div class="col-md-7">
-      <%= f.select :stars, [[1], [2], [3], [4], [5]],{}, {class: "form-control "} %>
-    </div>
+    </ul>
   </div>
 
-    <%= f.hidden_field :book_id%>
-    <%= f.hidden_field :user_id%>
+  <div class="form-review container">
+    <p class="mb-1"><b>Add review:</b></p>
+    <%= form_for @review, html: {class: 'pt-2 form-horizontal'} do |f| %>
 
-  <div class="form-group row justify-content-center">
-    <%= f.label :comments, class: "col-md-2 control-label" %>
-    <div class="col-md-7">
-      <%= f.text_area :comments %>
+      <div class="form-group row justify-content-center">
+        <%= f.label :stars, class: "col-md-2 control-label" %>
+        <div class="col-md-7">
+          <%= f.select :stars, [[1], [2], [3], [4], [5]],{}, {class: "form-control "} %>
+        </div>
       </div>
-  </div>
-  <div class="form-group row justify-content-center">
-    <%= f.submit class: 'btn btn-primary' %>
-  </div>
 
-<% end %>
+        <%= f.hidden_field :book_id%>
+        <%= f.hidden_field :user_id%>
+
+      <div class="form-group row justify-content-center">
+        <%= f.label :comments, class: "col-md-2 control-label" %>
+        <div class="col-md-7">
+          <%= f.text_area :comments, {class: "form-control ", required: 'require'} %>
+          </div>
+      </div>
+      <div class="form-group row justify-content-center">
+        <input type="submit" class="btn btn-primary btn-lg" value="Create Review">
+      </div>
+
+    <% end %>
+  </div>
 <%# link_to "Back", books_path, class: 'btn btn-secondary' %>
 
 <% if @current_user == @book.author %> 
@@ -63,3 +73,26 @@
   <% end %> 
 <% end %>
 <div>
+
+<script>
+$('form').submit(function (e) {
+  e.preventDefault()
+  
+  const values = $(this).serialize()
+  var posting = $.post('/reviews', values);
+
+  posting.done(function(data) {
+    // console.log(data)
+    let review = new Review(data)
+    $('ul.list-group.col-sm-8').append(review.render())
+    swal({
+      title: "Good job!",
+      text: "Review has been added",
+      icon: "success",
+      button: "OK!",
+    });
+  });
+  posting.fail(()=> swal("You've already reviewed this book."))
+})
+
+</script>

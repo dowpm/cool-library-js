@@ -1,21 +1,8 @@
 <% title 'Review' %>
 
 <div class="jumbotron">
-    <h1 class="text-center "><%= @review.book.title %></h1>
-    <hr class="my-4">
-    <div class='row justify-content-center'>
-        <div class="col-sm-4 col-md-3"><h4>Review by : </h4></div>
-        <div class="col-sm-2 px-sm-1"><h4><%= @review.user.full_name %> </h4></div>
-        <div class="col-sm-2 col-sm-offset-3"><h4>Stars: </h4></div>
-        <div class="col-sm-3"><h4><%= show_stars(@review.stars) %> </h4></div>
-    </div>
-    <div class="row justify-content-center pt-sm-4">
-    <div class="col-sm-4  col-sm-offset-3"></div>
-        <div class="col-sm pl-sm-2"><h4>Comments: </h4></div>
-        <div class="col-sm"><p><%= @review.comments %></p></div>
-        
-        
-    </div>
+    <div id="showReview"></div>
+
     <div class="row justify-content-center">
         <div class="col-sm-6 col-sm-offset-3" style="padding-top: 50px">
             <%= 
@@ -45,3 +32,15 @@
         </div>
     </div>
 </div>
+
+<script>
+    $.get('/reviews/<%= @review.id%>.json', function(data) {
+        // console.log(data)
+        review = new Review(data)
+        $('#showReview').html(review.show())
+
+      }).fail(function(error) {
+          swal('Something went wrong: ' + error.statusText)
+        console.log('Something went wrong: ' + error.statusText);
+    });
+</script>

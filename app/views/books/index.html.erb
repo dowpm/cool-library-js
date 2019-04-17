@@ -2,15 +2,30 @@
 
 <div class="container">
   <div class="row">
-    <% @books.each do |book| %>
-      <div class="col-md-4">
-        <div class="card" style="width: 18rem;">
-          <div class="card-body">
-            <h5 class="card-title"><%= book.title %></h5>
-            <%= link_to "View", user_book_path(book.author_name,book), class: 'btn btn-primary' %>
-          </div>
-        </div>
-      </div>
-    <% end %>
+    
  </div>
 </div>
+
+<script>
+    $.get('/books.json', function(data) {
+        
+        let booksList = ""
+        data.forEach(function(book){
+          booksList += `<div class="col-md-4">
+                          <div class="card" style="width: 18rem;">
+                            <div class="card-body">
+                              <h5 class="card-title">${book.title}</h5>
+                              <h6 class="card-subtitle mb-2 text-muted">By: ${book.author.full_name}</h6>
+                              
+                              <a href="users/${book.author.full_name}/books/${book.id}" class="btn btn-primary">View</a>
+                            </div>
+                          </div>
+                        </div>`
+        })
+        $('.row').html(booksList)
+        // console.log(booksList)
+      }).fail(function(error) {
+          // swal('Something went wrong: ' + error.statusText)
+        console.log('Something went wrong: ' + error.statusText);
+    });
+</script>

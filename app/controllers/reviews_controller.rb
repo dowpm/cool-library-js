@@ -12,17 +12,22 @@ class ReviewsController < ApplicationController
             redirect_to books_path
             return
         end
-        render json: @review
+        respond_to do |format|
+            format.html { render :show }
+            format.json { render json: @review}
+        end
     end
 
     def create
         if @review = Review.find_by(user_id: @current_user.id, book_id: params[:review][:book_id]) 
             flash["alert alert-info"] = "You've already reviewed this book."
-            redirect_to user_book_path(@review.book.author_name, @review.book)
+            # redirect_to user_book_path(@review.book.author_name, @review.book)
+            render json: @review, status: 404
         else
             @review = Review.new(review_params)
             if @review.save
-            redirect_to user_book_path(@review.book.author_name, @review.book)
+            # redirect_to user_book_path(@review.book.author_name, @review.book)
+            render json: @review, status: 201
             else
                 flash["alert alert-danger"] = "Comment's can't be blank"
                 redirect_to user_book_path(@review.book.author_name, @review.book)
